@@ -1,7 +1,7 @@
 
 const WEEKDAYS = ['DO','LU','MA','MI','JU','VI','SA'];
 
-today = getTodayDate();
+var today = getTodayDate();
 
 // Fill calendar header
 var calendar_title = document.querySelector('.calendar-title');
@@ -21,23 +21,11 @@ WEEKDAYS.forEach(function(day_name) {
 calendar_table.appendChild(calendar_weekdays);
 
 // Fill calendar weeks
-var current_day = 1;
-while (current_day < 31)
-{
-  var calendar_week = document.createElement('tr');
-  calendar_week.classList.add('calendar-week');
+fillCalendarWeeks(calendar_table,today);
 
-  for (var day=current_day; day <= current_day+6; day++)
-  {
-    var calendar_day = document.createElement('th');
-    calendar_day.textContent = day;
-    calendar_week.appendChild(calendar_day);
-  }
-
-  calendar_table.appendChild(calendar_week);
-  current_day += 6;
-}
-
+/*****************************************************************************
+****************************** HELPER FUNCTIONS ******************************
+*****************************************************************************/
 
 function getTodayDate()
 {
@@ -96,33 +84,35 @@ function dayOfWeek(year,month,day)
             helper[month-1] + day) % 7;
 }
 
-function getCalendarMonth(date)
+function fillCalendarWeeks(calendar_table,date)
 {
-  // Console log header
-  console.log('\n' + getMonthName(date['month']) + ' ' + date['year'] + '\n');
-  console.log('DO LU MA MI JU VI SA');
+  const DAYS_OF_WEEKS = 7;
 
-  const DAYS_OF_WEEK = 7;
   var first_day_of_month = dayOfWeek(date['year'],date['month'],1);
   var day = 1 - first_day_of_month; // Account for blank spaces
   var calendar_ind = 0; // Index including blank spaces
   var last_day = daysInMonth(date);
-  var week_str = '';
+  var calendar_week = document.createElement('tr');
+  calendar_week.classList.add('calendar-week');
 
-  while (true) {
-    // Log every calendar week (including blank spaces in first week)
+  while (true)
+  {
+    // Add calendar week to table
     if (calendar_ind % 7 === 0 && calendar_ind != 0)
     {
-      console.log(week_str);
-      week_str = '';
+      calendar_table.appendChild(calendar_week);
+      calendar_week = document.createElement('tr');
+      calendar_week.classList.add('calendar-week');
     }
 
-    // Add day to week_str (including blank spaces in first week)
-    week_str += (day < 1) ? '   ' : (formatDay(day) + ' ');
+    // Add day to calendar_week (including blank spaces in first week)
+    var calendar_day = document.createElement('th');
+    calendar_day.textContent = (day < 1) ? '' : day;
+    calendar_week.appendChild(calendar_day);
 
     if (day === last_day)
     {
-      console.log(week_str);
+      calendar_table.appendChild(calendar_week);
       break;
     }
 
