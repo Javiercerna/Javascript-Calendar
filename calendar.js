@@ -87,6 +87,7 @@ function dayOfWeek(year,month,day)
 function fillCalendarWeeks(calendar_table,date)
 {
   const DAYS_OF_WEEKS = 7;
+  var today = getTodayDate();
 
   var first_day_of_month = dayOfWeek(date['year'],date['month'],1);
   var day = 1 - first_day_of_month; // Account for blank spaces
@@ -108,6 +109,13 @@ function fillCalendarWeeks(calendar_table,date)
     // Add day to calendar_week (including blank spaces in first week)
     var calendar_day = document.createElement('th');
     calendar_day.textContent = (day < 1) ? '' : day;
+
+    // Handle calendar-today
+    if (today['year'] === date['year'] && today['month'] === date['month']
+          && today['day'] === day)
+    {
+      calendar_day.classList.add('calendar-today');
+    }
     calendar_week.appendChild(calendar_day);
 
     if (day === last_day)
