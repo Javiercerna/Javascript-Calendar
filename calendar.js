@@ -1,27 +1,9 @@
 
 const WEEKDAYS = ['DO','LU','MA','MI','JU','VI','SA'];
 
-var today = getTodayDate();
+var current_month = getTodayDate();
 
-// Fill calendar header
-var calendar_title = document.querySelector('.calendar-title');
-calendar_title.textContent = getMonthName(today['month']) + ' ' + today['year'];
-
-// Fill calendar weekdays
-var calendar_table = document.querySelector('.calendar-content table');
-var calendar_weekdays = document.createElement('tr');
-calendar_weekdays.classList.add('calendar-weekdays');
-
-WEEKDAYS.forEach(function(day_name) {
-  var calendar_day = document.createElement('th');
-  calendar_day.textContent = day_name;
-  calendar_weekdays.appendChild(calendar_day);
-});
-
-calendar_table.appendChild(calendar_weekdays);
-
-// Fill calendar weeks
-fillCalendarWeeks(calendar_table,today);
+renderMonth(current_month);
 
 /*****************************************************************************
 ****************************** HELPER FUNCTIONS ******************************
@@ -49,6 +31,23 @@ function getNextMonthDate(date)
     next_month_date['month'] = date['month'] + 1;
   }
   return next_month_date;
+}
+
+function getPrevMonthDate(date)
+{
+  var prev_month_date = {'day': date['day'],'month': date['month'],
+                         'year': date['year']};
+
+  if (date['month'] === 1)
+  {
+    prev_month_date['year'] = date['year'] - 1;
+    prev_month_date['month'] = 12;
+  }
+  else
+  {
+    prev_month_date['month'] = date['month'] - 1;
+  }
+  return prev_month_date;
 }
 
 function isLeapYear(year)
@@ -127,4 +126,47 @@ function fillCalendarWeeks(calendar_table,date)
     calendar_ind++;
     day++;
   }
+}
+
+function renderMonth(date)
+{
+  // Fill calendar header
+  var calendar_title = document.querySelector('.calendar-title');
+  calendar_title.textContent = getMonthName(date['month']) + ' ' + date['year'];
+
+  // Fill calendar weekdays
+  var calendar_table = document.querySelector('.calendar-content table');
+  var calendar_weekdays = document.createElement('tr');
+  calendar_weekdays.classList.add('calendar-weekdays');
+
+  WEEKDAYS.forEach(function(day_name) {
+    var calendar_day = document.createElement('th');
+    calendar_day.textContent = day_name;
+    calendar_weekdays.appendChild(calendar_day);
+  });
+
+  calendar_table.appendChild(calendar_weekdays);
+
+  // Fill calendar weeks
+  fillCalendarWeeks(calendar_table,date);
+}
+
+function renderNextMonth()
+{
+  current_month = getNextMonthDate(current_month);
+  // Empty table
+  var calendar_table = document.querySelector('.calendar-content table');
+  calendar_table.innerHTML = '';
+
+  renderMonth(current_month);
+}
+
+function renderPrevMonth()
+{
+  current_month = getPrevMonthDate(current_month);
+  // Empty table
+  var calendar_table = document.querySelector('.calendar-content table');
+  calendar_table.innerHTML = '';
+
+  renderMonth(current_month);
 }
