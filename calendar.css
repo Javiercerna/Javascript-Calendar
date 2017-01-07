@@ -42,3 +42,12 @@ section {
 .right-arrow {
   float: right;
 }
+
+.calendar-content {
+  background-color: #FFF;
+}
+
+th {
+  /* Override font weight from user agent */
+  font-weight: initial;
+}

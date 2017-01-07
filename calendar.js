@@ -1,3 +1,44 @@
+
+const WEEKDAYS = ['DO','LU','MA','MI','JU','VI','SA'];
+
+today = getTodayDate();
+
+// Fill calendar header
+var calendar_title = document.querySelector('.calendar-title');
+calendar_title.textContent = getMonthName(today['month']) + ' ' + today['year'];
+
+// Fill calendar weekdays
+var calendar_table = document.querySelector('.calendar-content table');
+var calendar_weekdays = document.createElement('tr');
+calendar_weekdays.classList.add('calendar-weekdays');
+
+WEEKDAYS.forEach(function(day_name) {
+  var calendar_day = document.createElement('th');
+  calendar_day.textContent = day_name;
+  calendar_weekdays.appendChild(calendar_day);
+});
+
+calendar_table.appendChild(calendar_weekdays);
+
+// Fill calendar weeks
+var current_day = 1;
+while (current_day < 31)
+{
+  var calendar_week = document.createElement('tr');
+  calendar_week.classList.add('calendar-week');
+
+  for (var day=current_day; day <= current_day+6; day++)
+  {
+    var calendar_day = document.createElement('th');
+    calendar_day.textContent = day;
+    calendar_week.appendChild(calendar_day);
+  }
+
+  calendar_table.appendChild(calendar_week);
+  current_day += 6;
+}
+
+
 function getTodayDate()
 {
   var today = new Date();
