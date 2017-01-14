@@ -1,97 +1,19 @@
 
-const WEEKDAYS = ['DO','LU','MA','MI','JU','VI','SA'];
-
-var current_month = getTodayDate();
-
-renderMonth(current_month);
+var date_shown = new Date(); // Initialize to today date
+renderDate(date_shown);
 
 /*****************************************************************************
 ****************************** HELPER FUNCTIONS ******************************
 *****************************************************************************/
 
-function getTodayDate()
-{
-  var today = new Date();
-  return {'day': today.getDate(), 'month': today.getMonth() + 1,
-          'year': today.getFullYear()};
-}
-
-function getNextMonthDate(date)
-{
-  var next_month_date = {'day': date['day'], 'month': date['month'],
-                          'year': date['year']};
-
-  if (date['month'] === 12)
-  {
-    next_month_date['year'] = date['year'] + 1;
-    next_month_date['month'] = 1;
-  }
-  else
-  {
-    next_month_date['month'] = date['month'] + 1;
-  }
-  return next_month_date;
-}
-
-function getPrevMonthDate(date)
-{
-  var prev_month_date = {'day': date['day'],'month': date['month'],
-                         'year': date['year']};
-
-  if (date['month'] === 1)
-  {
-    prev_month_date['year'] = date['year'] - 1;
-    prev_month_date['month'] = 12;
-  }
-  else
-  {
-    prev_month_date['month'] = date['month'] - 1;
-  }
-  return prev_month_date;
-}
-
-function isLeapYear(year)
-{
-  return !((year % 4) || ((year % 100 === 0) && (year % 400)));
-}
-
-function daysInMonth(date)
-{
-  return (date['month'] === 2) ? (28 + isLeapYear(date['year'])) :
-        (31 - (date['month'] - 1) % 7 % 2);
-}
-
-function formatDay(day)
-{
-  return (day >= 10) ? String(day) : (' ' + String(day));
-}
-
-function getMonthName(month_number)
-{
-  const MONTHS_NAMES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio',
-                        'Agosto','Setiembre','Octubre','Noviembre','Diciembre'];
-  return MONTHS_NAMES[month_number-1];
-}
-
-/* Returns 0 - 6 --> Sunday: 0, Saturday: 6 */
-function dayOfWeek(year,month,day)
-{
-  // Explanation: http://blog.hackerearth.com/2016/11/algorithm-on-how-to-find-the-day-of-week.html/
-  var helper = [0,3,2,5,0,3,5,1,4,6,2,4];
-  year -= (month < 3) ? 1 : 0;
-  return (year + parseInt(year/4) - parseInt(year/100) + parseInt(year/400) +
-            helper[month-1] + day) % 7;
-}
-
 function fillCalendarWeeks(calendar_table,date)
 {
-  const DAYS_OF_WEEKS = 7;
-  var today = getTodayDate();
+  var today = new Date();
 
-  var first_day_of_month = dayOfWeek(date['year'],date['month'],1);
+  var first_day_of_month = new Date(date.getFullYear(),date.getMonth(),1).getDay();
   var day = 1 - first_day_of_month; // Account for blank spaces
   var calendar_ind = 0; // Index including blank spaces
-  var last_day = daysInMonth(date);
+  var total_days = new Date(date.getFullYear(),date.getMonth()+1,0).getDate();
   var calendar_week = document.createElement('tr');
   calendar_week.classList.add('calendar-week');
 
@@ -109,15 +31,15 @@ function fillCalendarWeeks(calendar_table,date)
     var calendar_day = document.createElement('th');
     calendar_day.textContent = (day < 1) ? '' : day;
 
-    // Handle calendar-today
-    if (today['year'] === date['year'] && today['month'] === date['month']
-          && today['day'] === day)
+    // Add calendar-today if today date is reached
+    if (today.getFullYear() === date.getFullYear() &&
+        today.getMonth() === date.getMonth() && today.getDate() === day)
     {
       calendar_day.classList.add('calendar-today');
     }
     calendar_week.appendChild(calendar_day);
 
-    if (day === last_day)
+    if (day === total_days)
     {
       calendar_table.appendChild(calendar_week);
       break;
@@ -128,14 +50,21 @@ function fillCalendarWeeks(calendar_table,date)
   }
 }
 
-function renderMonth(date)
+function renderDate(date)
 {
+  const WEEKDAYS = ['DO','LU','MA','MI','JU','VI','SA'];
+  const MONTHS_NAMES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio',
+                        'Agosto','Setiembre','Octubre','Noviembre','Diciembre'];
+
+  // Empty table
+  var calendar_table = document.querySelector('.calendar-content table');
+  calendar_table.innerHTML = '';
+
   // Fill calendar header
-  var calendar_title = document.querySelector('.calendar-title');
-  calendar_title.textContent = getMonthName(date['month']) + ' ' + date['year'];
+  document.querySelector('.calendar-title').textContent =
+    MONTHS_NAMES[date.getMonth()] + ' ' + date.getFullYear();
 
   // Fill calendar weekdays
-  var calendar_table = document.querySelector('.calendar-content table');
   var calendar_weekdays = document.createElement('tr');
   calendar_weekdays.classList.add('calendar-weekdays');
 
@@ -151,22 +80,16 @@ function renderMonth(date)
   fillCalendarWeeks(calendar_table,date);
 }
 
-function renderNextMonth()
+function updateDateShown(date_modifier)
 {
-  current_month = getNextMonthDate(current_month);
-  // Empty table
-  var calendar_table = document.querySelector('.calendar-content table');
-  calendar_table.innerHTML = '';
+  if (date_modifier === 'prev-month')
+  {
+    date_shown.setMonth(date_shown.getMonth() - 1);
+  }
+  else if (date_modifier === 'next-month')
+  {
+    date_shown.setMonth(date_shown.getMonth() + 1);
+  }
 
-  renderMonth(current_month);
-}
-
-function renderPrevMonth()
-{
-  current_month = getPrevMonthDate(current_month);
-  // Empty table
-  var calendar_table = document.querySelector('.calendar-content table');
-  calendar_table.innerHTML = '';
-
-  renderMonth(current_month);
+  renderDate(date_shown);
 }
